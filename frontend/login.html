@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Shortlytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="auth-shell">
+    <a class="brand auth-brand" href="/" aria-label="Shortlytics home">
+      <span class="brand-mark">S</span>
+      <span>Shortlytics</span>
+    </a>
+
+    <section class="auth-layout">
+      <div class="auth-copy">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Login to monitor every short link.</h1>
+        <p class="lead">Open your dashboard, compare click trends, and keep campaigns moving with clean analytics.</p>
+      </div>
+
+      <form class="auth-card" data-auth-form action="/form-submit" method="POST">
+        <h2>Login</h2>
+        <label>
+          Email address
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </label>
+        <label>
+          Password
+          <input type="password" id="password" name="password" placeholder="Enter your password" minlength="6" required>
+        </label>
+        <div class="form-row">
+          <label class="check-label">
+            <input type="checkbox" name="remember">
+            Remember me
+          </label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button class="btn btn-primary btn-full" id="submit" type="submit">Login</button>
+        <p class="form-note">New here? <a href="/register">Create an account</a></p>
+        <p class="form-message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shortlytics | URL Shortener Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <nav class="nav">
+      <a class="brand" href="index.html" aria-label="Shortlytics home">
+        <span class="brand-mark">S</span>
+        <span>Shortlytics</span>
+      </a>
+      <div class="nav-actions">
+        <a class="btn btn-ghost" href="/dashboard">Return to dashboard</a>
+        <a class="btn btn-ghost" href="/login">Login</a>
+        <a class="btn btn-primary" href="/register">Register</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">URL shortener with statistical analysis</p>
+        <h1>Short links that show the whole story.</h1>
+        <p class="lead">
+          Create branded short URLs, track every click, and understand audience behavior through clean, real-time analytics.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-large" href="/register">Create account</a>
+          <a class="btn btn-soft btn-large" href="/login">Login</a>
+        </div>
+      </div>
+
+      <div class="analytics-panel" aria-label="Analytics preview">
+        <div class="panel-header">
+          <div>
+            <p class="muted">Campaign link</p>
+            <strong>short.ly/summer26</strong>
+          </div>
+          <span class="status-dot">Live</span>
+        </div>
+        <div class="url-box">
+          <span>https://oursite/example.com</span>
+          <button type="button" class="copy-btn" data-copy="https://oursite/example.com">Copy</button>
+        </div>
+        <div class="stats-grid">
+          <article>
+            <span>Total clicks</span>
+            <strong data-count="28470">0</strong>
+          </article>
+          <article>
+            <span>Unique visitors</span>
+            <strong data-count="18942">0</strong>
+          </article>
+          <article>
+            <span>Conversion rate</span>
+            <strong data-count="18">0%</strong>
+          </article>
+        </div>
+        <div class="chart" aria-hidden="true">
+          <span style="height: 36%"></span>
+          <span style="height: 62%"></span>
+          <span style="height: 48%"></span>
+          <span style="height: 78%"></span>
+          <span style="height: 56%"></span>
+          <span style="height: 86%"></span>
+          <span style="height: 70%"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" aria-label="Website features">
+      <article>
+        <h2>Track performance</h2>
+        <p>Measure clicks, unique users, referrers, devices, and geographic trends from one focused dashboard.</p>
+      </article>
+      <article>
+        <h2>Manage campaigns</h2>
+        <p>Group short links by project, compare performance, and quickly spot your strongest traffic sources.</p>
+      </article>
+      <article>
+        <h2>Share smarter</h2>
+        <p>Use memorable links that are easier to share while keeping detailed reporting close at hand.</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

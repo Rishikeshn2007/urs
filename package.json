@@ -1,0 +1,27 @@
+{
+  "name": "urs",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Rishikeshn2007/urs#readme",
+  "bugs": {
+    "url": "https://github.com/Rishikeshn2007/urs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rishikeshn2007/urs.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4",
+    "path": "^0.12.7"
+  }
+}

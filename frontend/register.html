@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Shortlytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="auth-shell">
+    <a class="brand auth-brand" href="index.html" aria-label="Shortlytics home">
+      <span class="brand-mark">S</span>
+      <span>Shortlytics</span>
+    </a>
+
+    <section class="auth-layout">
+      <div class="auth-copy">
+        <p class="eyebrow">Start shortening</p>
+        <h1>Create links with built-in statistical analysis.</h1>
+        <p class="lead">Register to build campaigns, shorten URLs, and study audience behavior from day one.</p>
+      </div>
+
+      <form class="auth-card" data-auth-form action="/form-register" method="POST">
+        <h2>Create account</h2>
+        <label>
+          Full name
+          <input type="text" name="name" placeholder="Your name" required>
+        </label>
+        <label>
+          Email address
+          <input type="email" name="email" placeholder="you@example.com" required>
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" placeholder="Create a password" minlength="6" required>
+        </label>
+        <label>
+          Company or project
+          <input type="text" name="project" placeholder="Optional">
+        </label>
+        <button class="btn btn-primary btn-full" type="submit">Register</button>
+        <p class="form-note">Already have an account? <a href="login.html">Login</a></p>
+        <p class="form-message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
