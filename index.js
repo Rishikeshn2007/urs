@@ -1,11 +1,18 @@
 const express=require('express');
 require('dotenv').config();
 const path=require('path');
+const mongoose=require('mongoose');
 
 const user_router=require('./routes/users');
 const {login}=require('./controllers/auth');
 
 const app=express();
+
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB Connected Successfully'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 app.use(express.static(path.join(__dirname,'frontend')));
 app.use(express.urlencoded({extended:true}));
