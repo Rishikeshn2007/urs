@@ -98,7 +98,7 @@ app.get('/:url',async (req,res)=>{
         if(urlEntry)
         {
             await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});
-            return res.redirect(urlEntry.originalUrl);
+            return res.sendFile(path.join(__dirname,'frontend','404.html'));
         }
         else
         {
