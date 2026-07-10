@@ -27,14 +27,30 @@ router.post('/shorten-url',verifyToken,async (req,res)=>{
     }
     try{
         const shorturl=generateShortUrl(longurl);
-        const final_url='http://localhost:3000/'+shorturl;
-        const savedShortUrl=await saveUrl(longurl,final_url,email);
-        return res.status(200).json({success: true, shortUrl: savedShortUrl});
+        const savedShortUrl=await saveUrl(longurl,shorturl,email);
+        const sendurl=`${req.protocol}://${req.get('host')}/${savedShortUrl}`;
+        return res.status(200).json({success: true,origin: shorturl, shortUrl: sendurl});
     }
     catch(err)
     {
         console.error('Error shortening URL:', err);
         return res.status(500).json({success: false, message: 'Error shortening URL. Please try again.'});
+    }
+});
+
+router.delete('/delete-url/:shortUrl',verifyToken,async (req,res)=>{
+    const shortUrl=req.params.shortUrl;
+    try{
+        const deletedUrl=await Url.findOneAndDelete({shortUrl:shortUrl});
+        if(deletedUrl)
+            return res.status(200).json({success: true, message: 'URL deleted successfully'});
+        else
+            return res.status(404).json({success: false, message: 'Short URL not found'});
+    }
+    catch(err)
+    {
+        console.error('Error deleting URL:', err);
+        return res.status(500).json({success: false, message: 'Error deleting URL. Please try again.'});
     }
 });
 
