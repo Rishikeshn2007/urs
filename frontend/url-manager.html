@@ -964,7 +964,7 @@
             allUrls.forEach(url => {
                 html += `
                     <tr>
-                        <td class="url-cell"><a href="${url.shortUrl}" target="_blank" rel="noopener noreferrer" target="_blank">${window.location.origin}/${url.shortUrl}</a></td>
+                        <td class="url-cell">${window.location.origin}/${url.shortUrl}</td>
                         <td class="url-cell">${url.originalUrl}</td>
                         <td><span class="click-badge">${url.clicks} clicks</span></td>
                         <td>
