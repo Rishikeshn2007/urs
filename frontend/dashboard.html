@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-message {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .dashboard-content {
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .info-card label {
+            display: block;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .info-card p {
+            color: #333;
+            font-size: 16px;
+            word-break: break-all;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn-home {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-home:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>👋 Welcome!</h1>
+            <p class="welcome-message" id="welcomeMessage">Loading your profile...</p>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="loading" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading your dashboard...</p>
+            </div>
+
+            <div id="userInfo" style="display: none;">
+                <div class="info-card">
+                    <label>Email Address</label>
+                    <p id="userEmail"></p>
+                </div>
+
+                <div class="info-card">
+                    <label>Account Status</label>
+                    <p id="userStatus">Active ✓</p>
+                </div>
+
+                <div class="info-card">
+                    <label>Login Time</label>
+                    <p id="loginTime"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-home" onclick="goHome()">← Back Home</button>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Load user dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch user info from server
+            fetch('/users/profile', {
+                method: 'GET',
+                credentials: 'include' // Include cookies
+            })
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/login';
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.email) {
+                    setTimeout(() => {
+                        document.getElementById('loadingState').style.display = 'none';
+                        document.getElementById('userInfo').style.display = 'block';
+                        document.getElementById('welcomeMessage').textContent = `Welcome, ${data.email}!`;
+                        document.getElementById('userEmail').textContent = data.email;
+                        document.getElementById('loginTime').textContent = new Date().toLocaleString();
+                    }, 500);
+                } else {
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+                window.location.href = '/login';
+            });
+        });
+
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                alert('You have been logged out successfully!');
+                window.location.href = '/';
+            })
+            .catch(() => {
+                window.location.href = '/';
+            });
+        }
+
+        function goHome() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

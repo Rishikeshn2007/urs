@@ -2,9 +2,11 @@ const express=require('express');
 require('dotenv').config();
 const path=require('path');
 const mongoose=require('mongoose');
+const cookieParser=require('cookie-parser');
 
 const user_router=require('./routes/users');
-const {login}=require('./controllers/auth');
+const {login, is_exists,register}=require('./controllers/auth');
+const {generateToken,verifyToken}=require('./middlewares/jwt_token');
 
 const app=express();
 
@@ -14,6 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB Connected Successfully'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname,'frontend')));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
@@ -32,19 +35,29 @@ app.post('/form-register',async (req,res)=>{
 
     if(!name || !email || !password)
     {
-        return res.status(400).send('Name, email and password are required');
+        return res.status(400).json({success: false, message: 'Name, email and password are required'});
     }
 
     if(password.length<6)
     {
-        return res.status(400).send('Password must be at least 6 characters long');
+        return res.status(400).json({success: false, message: 'Password must be at least 6 characters long'});
     }
 
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     {
-        return res.status(400).send('Please enter a valid email address');
+        return res.status(400).json({success: false, message: 'Please enter a valid email address'});
     }
     
+    if(await is_exists(email))
+    {
+        return res.status(400).json({success: false, message: 'User with this email already exists'});
+    }
+    try{
+        await register(name,email,password);
+        return res.status(201).json({success: true, message: 'Account created successfully! Redirecting to login...', redirect: '/login'});
+    } catch(err){
+        return res.status(500).json({success: false, message: 'Error creating account. Please try again.'});
+    }
 
 });
 
@@ -53,24 +66,33 @@ app.post('/form-submit', async (req,res)=>{
 
     if(!email || !password)
     {
-        return res.status(400).send('Email and password are required');
+        return res.status(400).json({success: false, message: 'Email and password are required'});
     }
 
     const result = await login(email,password);
 
     if(result)
     {
-        return res.redirect('/users/dashboard');
+        const token = generateToken({ email });
+        res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'Lax' });
+        return res.status(200).json({success: true, message: 'Login successful! Redirecting to dashboard...', redirect: '/users/dashboard'});
     }
 
-    return res.status(401).send('Invalid email or password');
+    return res.status(401).json({success: false, message: 'Invalid email or password'});
 });
 
 app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'frontend','index.html'));
 });
 
+app.get('/users/profile',verifyToken,(req,res)=>{
+    res.json({email: req.user.email});
+});
 
+app.post('/logout',(req,res)=>{
+    res.clearCookie('token');
+    res.json({success: true, message: 'Logged out successfully'});
+});
 
 const PORT=process.env.PORT || 3000;
 
