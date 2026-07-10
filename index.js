@@ -99,8 +99,7 @@ app.post('/logout',(req,res)=>{
 app.get('/:url',async (req,res)=>{
     const shortUrl=req.params.url;
     try{
-        const orl='http://localhost:3000/'+shortUrl;
-        const urlEntry=await Urldb.findOne({shortUrl:orl});
+        const urlEntry=await Urldb.findOne({shortUrl:shortUrl});
         if(urlEntry)
         {
             await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});

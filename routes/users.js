@@ -26,7 +26,8 @@ router.post('/shorten-url',verifyToken,async (req,res)=>{
         return res.status(400).json({success: false, message: 'Please enter a valid URL starting with http:// or https://'});
     }
     try{
-        const shorturl=generateShortUrl(longurl);
+        const shorturl=await generateShortUrl(longurl);
+
         const savedShortUrl=await saveUrl(longurl,shorturl,email);
         const sendurl=`${req.protocol}://${req.get('host')}/${savedShortUrl}`;
         return res.status(200).json({success: true,origin: shorturl, shortUrl: sendurl});

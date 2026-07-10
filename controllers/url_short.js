@@ -1,13 +1,16 @@
 const { models } = require('mongoose');
 const Url=require('../schema/url');
 
-function generateShortUrl(longUrl) {
+async function generateShortUrl(longUrl) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let shortUrl = '';
     for (let i = 0; i < 6; i++) {
         const randomIndex = Math.floor(Math.random() * characters.length);
         shortUrl += characters[randomIndex];
     }
+    if(await Url.findOne({shortUrl:shortUrl}))
+        return generateShortUrl(longUrl);
+    else
     return shortUrl;
 }
 
