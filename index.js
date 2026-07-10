@@ -12,11 +12,6 @@ const Urldb=require('./schema/url');
 const app=express();
 
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected Successfully 🌍'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
-
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname,'frontend')));
 app.use(express.urlencoded({extended:true}));
@@ -119,11 +114,24 @@ app.get('/:url',async (req,res)=>{
 
 const PORT=process.env.PORT || 3000;
 
-app.listen(PORT,()=>{
-
+//app.listen(PORT,()=>{
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected Successfully '))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
-    console.log(`Server is running on port ${PORT}`);
-});
+//mongoose.connect(process.env.MONGO_URI)
+//  .then(() => console.log('MongoDB Connected Successfully '))
+//  .catch((err) => console.error('Error connecting to MongoDB:', err));
+//    console.log(`Server is running on port ${PORT}`);
+//});
+
+async function startServer() {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB Connected Successfully');
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error('Error connecting to MongoDB:', err);
+    }
+}
+
+startServer();
