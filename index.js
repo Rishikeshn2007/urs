@@ -98,11 +98,11 @@ app.get('/:url',async (req,res)=>{
         if(urlEntry)
         {
             await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});
-            return res.sendFile(path.join(__dirname,'frontend','404.html'));
+            return res.status(302).redirect(urlEntry.longUrl);
         }
         else
         {
-            return res.status(404).json({success: false, message: 'Short URL not found'});
+            return res.sendFile(path.join(__dirname,'frontend','404.html'));
         }
     }
     catch(err)
