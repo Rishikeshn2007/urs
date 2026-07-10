@@ -7,13 +7,14 @@ const cookieParser=require('cookie-parser');
 const user_router=require('./routes/users');
 const {login, is_exists,register}=require('./controllers/auth');
 const {generateToken,verifyToken}=require('./middlewares/jwt_token');
+const Urldb=require('./schema/url');
 
 const app=express();
 
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected Successfully'))
+  .then(() => console.log('MongoDB Connected Successfully 🌍'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
 app.use(cookieParser());
@@ -92,6 +93,29 @@ app.get('/users/profile',verifyToken,(req,res)=>{
 app.post('/logout',(req,res)=>{
     res.clearCookie('token');
     res.json({success: true, message: 'Logged out successfully'});
+});
+
+
+app.get('/:url',async (req,res)=>{
+    const shortUrl=req.params.url;
+    try{
+        const orl='http://localhost:3000/'+shortUrl;
+        const urlEntry=await Urldb.findOne({shortUrl:orl});
+        if(urlEntry)
+        {
+            await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});
+            return res.redirect(urlEntry.originalUrl);
+        }
+        else
+        {
+            return res.status(404).json({success: false, message: 'Short URL not found'});
+        }
+    }
+    catch(err)
+    {
+        console.error('Error retrieving URL:', err);
+        return res.status(500).json({success: false, message: 'Error retrieving URL. Please try again.'});
+    }
 });
 
 const PORT=process.env.PORT || 3000;

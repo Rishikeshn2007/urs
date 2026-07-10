@@ -114,6 +114,17 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        .btn-url-manager {
+            background: #43e97b;
+            color: white;
+        }
+
+        .btn-url-manager:hover {
+            background: #38d66a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+        }
+
         .loading {
             text-align: center;
             color: #667eea;
@@ -168,6 +179,7 @@
         </div>
 
         <div class="actions">
+            <button class="btn-url-manager" onclick="goToUrlManager()">🔗 URL Manager</button>
             <button class="btn-home" onclick="goHome()">← Back Home</button>
             <button class="btn-logout" onclick="logout()">Logout</button>
         </div>
@@ -223,6 +235,10 @@
 
         function goHome() {
             window.location.href = '/';
+        }
+
+        function goToUrlManager() {
+            window.location.href = '/users/url-manager';
         }
     </script>
 </body>

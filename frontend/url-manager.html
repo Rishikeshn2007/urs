@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.btn-secondary {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button.btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .chart-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        input[type="url"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="url"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button.btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button.btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button.btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .short-url-result {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .short-url-result.show {
+            display: block;
+        }
+
+        .short-url-result p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .short-url-result .url-display {
+            background: white;
+            padding: 12px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .short-url-result .url-text {
+            color: #667eea;
+            font-weight: 600;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .short-url-result button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .short-url-result button:hover {
+            background: #5568d3;
+        }
+
+        .table-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .table-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .click-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .url-cell {
+            word-break: break-all;
+            max-width: 300px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-copy {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #5568d3;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #da190b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 URL Shortener Manager</h1>
+            <div class="header-buttons">
+                <button class="btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn-secondary" onclick="goToDashboard()">← Dashboard</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2>Create Short URL</h2>
+                
+                <div id="formMessage" class="message"></div>
+
+                <form id="shortenForm">
+                    <div class="form-group">
+                        <label for="longUrl">Enter Long URL</label>
+                        <input 
+                            type="url" 
+                            id="longUrl" 
+                            name="longUrl" 
+                            placeholder="https://example.com/very/long/url"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-primary">Shorten URL</button>
+                </form>
+
+                <div id="shortUrlResult" class="short-url-result">
+                    <p>Your shortened URL:</p>
+                    <div class="url-display">
+                        <span class="url-text" id="shortUrlText"></span>
+                        <button type="button" onclick="copyToClipboard()">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-section">
+                <h2>Traffic Analysis</h2>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUrls">0</div>
+                        <div class="stat-label">Total URLs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalClicks">0</div>
+                        <div class="stat-label">Total Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgClicks">0</div>
+                        <div class="stat-label">Avg Clicks</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="clicksChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <h2>Your Shortened URLs</h2>
+            
+            <div id="tableContent">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Loading your URLs...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userEmail = '';
+        let allUrls = [];
+        let chart = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            getUserEmailAndLoadData();
+            document.getElementById('shortenForm').addEventListener('submit', handleShortenUrl);
+        });
+
+        // Get user email from profile
+        function getUserEmailAndLoadData() {
+            fetch('/users/profile', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/login';
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.email) {
+                    userEmail = data.email;
+                    loadUserUrls();
+                } else {
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+                window.location.href = '/login';
+            });
+        }
+
+        // Load user URLs
+        function loadUserUrls() {
+            fetch(`/users/myurls/${userEmail}`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch URLs');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && Array.isArray(data.urls)) {
+                    allUrls = data.urls;
+                    displayUrls();
+                    updateChart();
+                    updateStats();
+                } else {
+                    allUrls = [];
+                    displayUrls();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading URLs:', error);
+                showTableMessage('Error loading URLs. Please try again.', 'error');
+            });
+        }
+
+        // Handle shorten URL form submission
+        async function handleShortenUrl(e) {
+            e.preventDefault();
+            
+            const longUrl = document.getElementById('longUrl').value;
+            const formMessage = document.getElementById('formMessage');
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            
+            // Clear previous message
+            formMessage.classList.remove('success', 'error');
+            formMessage.style.display = 'none';
+
+            // Disable button
+            submitButton.disabled = true;
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Processing...';
+
+            try {
+                const response = await fetch('/users/shorten-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        longurl: longUrl,
+                        email: userEmail
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    formMessage.classList.add('success');
+                    formMessage.textContent = '✓ URL shortened successfully!';
+                    formMessage.style.display = 'block';
+
+                    // Display short URL
+                    document.getElementById('shortUrlText').textContent = data.shortUrl;
+                    document.getElementById('shortUrlResult').classList.add('show');
+
+                    // Clear form
+                    document.getElementById('longUrl').value = '';
+
+                    // Reload URLs after 1 second
+                    setTimeout(() => {
+                        loadUserUrls();
+                    }, 1000);
+                } else {
+                    formMessage.classList.add('error');
+                    formMessage.textContent = '✗ ' + data.message;
+                    formMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                formMessage.classList.add('error');
+                formMessage.textContent = '✗ An error occurred. Please try again.';
+                formMessage.style.display = 'block';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
+        }
+
+        // Display URLs in table
+        function displayUrls() {
+            const tableContent = document.getElementById('tableContent');
+
+            if (allUrls.length === 0) {
+                tableContent.innerHTML = `
+                    <div class="empty-state">
+                        <p>📭 No shortened URLs yet</p>
+                        <p>Create your first short URL using the form on the left!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Short URL</th>
+                            <th>Original URL</th>
+                            <th>Clicks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            allUrls.forEach(url => {
+                html += `
+                    <tr>
+                        <td class="url-cell"><a href="${url.shortUrl}" target="_blank">${url.shortUrl}</a></td>
+                        <td class="url-cell">${url.originalUrl}</td>
+                        <td><span class="click-badge">${url.clicks} clicks</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-copy" onclick="copyUrl('${url.shortUrl}')">Copy</button>
+                                <button class="btn-delete" onclick="deleteUrl('${url._id}')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            tableContent.innerHTML = html;
+        }
+
+        // Update chart
+        function updateChart() {
+            const ctx = document.getElementById('clicksChart').getContext('2d');
+            
+            const labels = allUrls.map(url => {
+                const shortPart = url.shortUrl.split('/').pop();
+                return shortPart.length > 20 ? shortPart.substring(0, 20) + '...' : shortPart;
+            });
+
+            const data = allUrls.map(url => url.clicks);
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No data'],
+                    datasets: [{
+                        label: 'Clicks per URL',
+                        data: data.length > 0 ? data : [0],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#4facfe',
+                            '#00f2fe',
+                            '#43e97b',
+                            '#fa709a',
+                            '#fee140'
+                        ],
+                        borderRadius: 5,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalUrls = allUrls.length;
+            const totalClicks = allUrls.reduce((sum, url) => sum + url.clicks, 0);
+            const avgClicks = totalUrls > 0 ? Math.round(totalClicks / totalUrls) : 0;
+
+            document.getElementById('totalUrls').textContent = totalUrls;
+            document.getElementById('totalClicks').textContent = totalClicks;
+            document.getElementById('avgClicks').textContent = avgClicks;
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            const url = document.getElementById('shortUrlText').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✓ Copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy');
+            });
+        }
+
+        // Copy URL from table
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✓ Copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy');
+            });
+        }
+
+        // Delete URL (placeholder - requires backend implementation)
+        function deleteUrl(id) {
+            if (confirm('Are you sure you want to delete this URL?')) {
+                alert('Delete functionality requires backend implementation');
+            }
+        }
+
+        // Refresh data
+        function refreshData() {
+            loadUserUrls();
+        }
+
+        // Go to dashboard
+        function goToDashboard() {
+            window.location.href = '/users/dashboard';
+        }
+
+        // Show table message
+        function showTableMessage(message, type) {
+            const tableContent = document.getElementById('tableContent');
+            tableContent.innerHTML = `<div class="empty-state">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
