@@ -98,11 +98,11 @@ app.get('/:url',async (req,res)=>{
         if(urlEntry)
         {
             await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});
-            return res.status(302).redirect(urlEntry.longUrl);
+            res.status(302).redirect(urlEntry.longUrl);
         }
         else
         {
-            return res.sendFile(path.join(__dirname,'frontend','404.html'));
+            res.sendFile(path.join(__dirname,'frontend','404.html'));
         }
     }
     catch(err)
