@@ -98,7 +98,7 @@ app.get('/:url',async (req,res)=>{
         if(urlEntry)
         {
             await Urldb.findByIdAndUpdate(urlEntry._id,{$inc:{clicks:1}});
-            res.status(302).redirect(urlEntry.longUrl);
+            res.status(302).redirect(urlEntry.originalUrl);
         }
         else
         {
