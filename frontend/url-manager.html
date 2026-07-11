@@ -844,31 +844,34 @@
         }
 
         // Load user URLs
-        function loadUserUrls() {
-            fetch(`/users/myurls/${userEmail}`, {
-                method: 'GET',
-                credentials: 'include'
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to fetch URLs');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success && Array.isArray(data.urls)) {
-                    allUrls = data.urls;
-                    displayUrls();
-                    updateChart();
-                    updateStats();
-                } else {
-                    allUrls = [];
-                    displayUrls();
-                }
-            })
-            .catch(error => {
-                console.error('Error loading URLs:', error);
-                showTableMessage('Error loading URLs. Please try again.', 'error');
-            });
+        // Load user URLs
+function loadUserUrls() {
+    fetch('/users/myurls', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch URLs');
         }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success && Array.isArray(data.urls)) {
+            allUrls = data.urls;
+        } else {
+            allUrls = [];
+        }
+
+        displayUrls();
+        updateChart();
+        updateStats();
+    })
+    .catch(error => {
+        console.error('Error loading URLs:', error);
+        showTableMessage('Error loading URLs. Please try again.', 'error');
+    });
+}
 
         // Handle shorten URL form submission
         async function handleShortenUrl(e) {

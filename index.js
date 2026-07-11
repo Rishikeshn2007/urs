@@ -3,6 +3,7 @@ require('dotenv').config();
 const path=require('path');
 const mongoose=require('mongoose');
 const cookieParser=require('cookie-parser');
+const {rateLimit}=require('express-rate-limit');
 
 const user_router=require('./routes/users');
 const {login, is_exists,register}=require('./controllers/auth');
@@ -12,11 +13,22 @@ const Urldb=require('./schema/url');
 const app=express();
 
 
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	limit: 100, 
+	standardHeaders: 'draft-8', 
+	legacyHeaders: false,
+	ipv6Subnet: 56,
+});
+
+app.use(limiter);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname,'frontend')));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use('/users',user_router);
+
+
 
 app.get('/login',(req,res)=>{
     res.sendFile(path.join(__dirname,'frontend','login.html'));
@@ -81,10 +93,6 @@ app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'frontend','index.html'));
 });
 
-app.get('/users/profile',verifyToken,(req,res)=>{
-    res.json({email: req.user.email});
-});
-
 app.post('/logout',(req,res)=>{
     res.clearCookie('token');
     res.json({success: true, message: 'Logged out successfully'});
@@ -115,7 +123,6 @@ app.get('/:url',async (req,res)=>{
 const PORT=process.env.PORT || 3000;
 
 //app.listen(PORT,()=>{
-// Connect to MongoDB
 //mongoose.connect(process.env.MONGO_URI)
 //  .then(() => console.log('MongoDB Connected Successfully '))
 //  .catch((err) => console.error('Error connecting to MongoDB:', err));

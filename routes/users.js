@@ -6,15 +6,22 @@ const {saveUrl,generateShortUrl,getOriginalUrl}=require('../controllers/url_shor
 const {verifyToken}=require('../middlewares/jwt_token');
 const Url=require('../schema/url');
 
-router.get('/dashboard',verifyToken,(req,res)=>{
+router.use(verifyToken);
+
+router.get('/profile',(req,res)=>{
+    res.json({email: req.user.email});
+});
+
+
+router.get('/dashboard',(req,res)=>{
     res.sendFile(path.join(__dirname,'../frontend','dashboard.html'));
 });
 
-router.get('/url-manager',verifyToken,(req,res)=>{
+router.get('/url-manager',(req,res)=>{
     res.sendFile(path.join(__dirname,'../frontend','url-manager.html'));
 });
 
-router.post('/shorten-url',verifyToken,async (req,res)=>{
+router.post('/shorten-url',async (req,res)=>{
     const {longurl,email}=req.body;
     if(!longurl || !email)
     {
@@ -39,7 +46,7 @@ router.post('/shorten-url',verifyToken,async (req,res)=>{
     }
 });
 
-router.delete('/delete-url/:shortUrl',verifyToken,async (req,res)=>{
+router.delete('/delete-url/:shortUrl',async (req,res)=>{
     const shortUrl=req.params.shortUrl;
     try{
         const deletedUrl=await Url.findOneAndDelete({shortUrl:shortUrl});
@@ -55,8 +62,8 @@ router.delete('/delete-url/:shortUrl',verifyToken,async (req,res)=>{
     }
 });
 
-router.get('/myurls/:email',verifyToken,async (req,res)=>{
-    const email=req.params.email;
+router.get('/myurls',async (req,res)=>{
+    const email=req.user.email;
     try{
         const urls=await Url.find({email:email});
         return res.status(200).json({success: true, urls: urls});
